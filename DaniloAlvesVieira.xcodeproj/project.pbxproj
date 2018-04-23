@@ -12,6 +12,10 @@
 		926318762086E8CD00C50B75 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 926318742086E8CD00C50B75 /* Main.storyboard */; };
 		926318782086E8CF00C50B75 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 926318772086E8CF00C50B75 /* Assets.xcassets */; };
 		9263187B2086E8CF00C50B75 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 926318792086E8CF00C50B75 /* LaunchScreen.storyboard */; };
+		92631885208BD7DF00C50B75 /* ComprasUSA.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 92631882208A901000C50B75 /* ComprasUSA.xcdatamodeld */; };
+		92631887208BE0C000C50B75 /* ComprasTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92631886208BE0C000C50B75 /* ComprasTableViewController.swift */; };
+		92631889208D431100C50B75 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92631888208D431100C50B75 /* SettingsViewController.swift */; };
+		9263188B208D493700C50B75 /* UIViewController+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9263188A208D493700C50B75 /* UIViewController+CoreData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +26,10 @@
 		926318772086E8CF00C50B75 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9263187A2086E8CF00C50B75 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9263187C2086E8CF00C50B75 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		92631883208A901000C50B75 /* ComprasUSA.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ComprasUSA.xcdatamodel; sourceTree = "<group>"; };
+		92631886208BE0C000C50B75 /* ComprasTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComprasTableViewController.swift; sourceTree = "<group>"; };
+		92631888208D431100C50B75 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		9263188A208D493700C50B75 /* UIViewController+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+CoreData.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,9 +65,13 @@
 				926318702086E8CD00C50B75 /* AppDelegate.swift */,
 				926318722086E8CD00C50B75 /* ViewController.swift */,
 				926318742086E8CD00C50B75 /* Main.storyboard */,
+				92631888208D431100C50B75 /* SettingsViewController.swift */,
+				9263188A208D493700C50B75 /* UIViewController+CoreData.swift */,
+				92631886208BE0C000C50B75 /* ComprasTableViewController.swift */,
 				926318772086E8CF00C50B75 /* Assets.xcassets */,
 				926318792086E8CF00C50B75 /* LaunchScreen.storyboard */,
 				9263187C2086E8CF00C50B75 /* Info.plist */,
+				92631882208A901000C50B75 /* ComprasUSA.xcdatamodeld */,
 			);
 			path = DaniloAlvesVieira;
 			sourceTree = "<group>";
@@ -136,6 +148,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				926318732086E8CD00C50B75 /* ViewController.swift in Sources */,
+				92631885208BD7DF00C50B75 /* ComprasUSA.xcdatamodeld in Sources */,
+				92631887208BE0C000C50B75 /* ComprasTableViewController.swift in Sources */,
+				9263188B208D493700C50B75 /* UIViewController+CoreData.swift in Sources */,
+				92631889208D431100C50B75 /* SettingsViewController.swift in Sources */,
 				926318712086E8CD00C50B75 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -290,7 +306,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = br.com.fiap.14mob.DaniloAlvesVieira;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -308,7 +324,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = br.com.fiap.14mob.DaniloAlvesVieira;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -334,6 +350,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		92631882208A901000C50B75 /* ComprasUSA.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				92631883208A901000C50B75 /* ComprasUSA.xcdatamodel */,
+			);
+			currentVersion = 92631883208A901000C50B75 /* ComprasUSA.xcdatamodel */;
+			path = ComprasUSA.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 926318652086E8CD00C50B75 /* Project object */;
 }
