@@ -18,7 +18,7 @@ class SettingsViewController: UIViewController {
 
     var fetchedResultController: NSFetchedResultsController<State>!
     var label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 22))
-    
+
     
     @IBOutlet weak var statesTableView: UITableView!
     
