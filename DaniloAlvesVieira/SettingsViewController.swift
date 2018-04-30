@@ -69,8 +69,8 @@ class SettingsViewController: UIViewController {
         
         alert.addTextField { (textField2: UITextField) in
             textField2.placeholder = "Imposto"
-            if let name = state?.tax {
-                textField2.text = "\(name)"
+            if let tax = state?.tax {
+                textField2.text = "\(tax)"
             }
         }
         
@@ -80,7 +80,7 @@ class SettingsViewController: UIViewController {
             state.tax = Double(alert.textFields![1].text!)!
             do {
                 try self.context.save()
-                self.loadState()
+//                self.loadState()
             } catch {
                 print(error.localizedDescription)
             }

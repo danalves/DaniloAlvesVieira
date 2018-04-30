@@ -10,17 +10,23 @@ import UIKit
 import CoreData
 
 class ComprasRegisterViewController: UIViewController {
-
+    
+    @IBOutlet weak var tfName: UITextField!
+    @IBOutlet weak var ivImage: UIImageView!
+    
+    @IBOutlet weak var tfPrice: UITextField!
+    
     @IBOutlet weak var tfState: UITextField!
     
     var pickerView: UIPickerView!
     var fetchedResultController: NSFetchedResultsController<State>!
-    var dataSource: [String]!
+    var dataSource: [State]!
     
+    var smallImage: UIImage!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         loadState()
         
         pickerView = UIPickerView()
@@ -52,7 +58,7 @@ class ComprasRegisterViewController: UIViewController {
         fetchedResultController.delegate = self
         do {
             try fetchedResultController.performFetch()
-            dataSource = fetchedResultController.fetchedObjects?.map({$0.name!})
+            dataSource = fetchedResultController.fetchedObjects
         } catch {
             print(error.localizedDescription)
         }
@@ -61,7 +67,7 @@ class ComprasRegisterViewController: UIViewController {
     
     @objc func done() {
         
-        tfState.text = dataSource[pickerView.selectedRow(inComponent: 0)]
+        tfState.text = dataSource[pickerView.selectedRow(inComponent: 0)].name
         cancel()
         
     }
@@ -71,12 +77,148 @@ class ComprasRegisterViewController: UIViewController {
         tfState.resignFirstResponder()
         
     }
+    
+    @IBAction func addPoster(_ sender: UIButton) {
+        //Criando o alerta que será apresentado ao usuário
+        let alert = UIAlertController(title: "Selecionar poster", message: "De onde você quer escolher o poster?", preferredStyle: .actionSheet)
+        
+        //Verificamos se o device possui câmera. Se sim, adicionamos a devida UIAlertAction
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            let cameraAction = UIAlertAction(title: "Câmera", style: .default, handler: { (action: UIAlertAction) in
+                self.selectPicture(sourceType: .camera)
+            })
+            alert.addAction(cameraAction)
+        }
+        
+        let libraryAction = UIAlertAction(title: "Biblioteca de fotos", style: .default) { (action: UIAlertAction) in
+            self.selectPicture(sourceType: .photoLibrary)
+        }
+        alert.addAction(libraryAction)
+        
+        let cancelAction = UIAlertAction(title: "Cancelar", style: .cancel, handler: nil)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func selectPicture(sourceType: UIImagePickerControllerSourceType) {
+        //Criando o objeto UIImagePickerController
+        let imagePicker = UIImagePickerController()
+        
+        //Definimos seu sourceType através do parâmetro passado
+        imagePicker.sourceType = sourceType
+        
+        //Definimos a MovieRegisterViewController como sendo a delegate do imagePicker
+        imagePicker.delegate = self
+        
+        //Apresentamos a imagePicker ao usuário
+        present(imagePicker, animated: true, completion: nil)
+    }
+    
+    @IBAction func addProduct(_ sender: UIButton) {
+        
+        validation()
+        
+        let product = Product(context: self.context)
+        
+        product.name = tfName.text
+        product.state = dataSource[pickerView.selectedRow(inComponent: 0)]
+        
+        let formatter = NumberFormatter()
+        formatter.locale = NSLocale.current
+        formatter.numberStyle = .decimal
+        formatter.usesGroupingSeparator = true
+        
+        if let price = formatter.number(from: tfPrice!.text!) {
+            product.price = price.doubleValue
+        } else {
+            showAlert(fields: ["Preço"])
+        }
+        
+        
+        do {
+            try self.context.save()
+        } catch {
+            print(error.localizedDescription)
+        }
+        
+    }
+    
+    func validation() {
+        
+        var emptyFields: [String] = []
+        
+        if tfName.text!.isEmpty {
+            emptyFields.append("Nome do produto")
+            tfName.backgroundColor = #colorLiteral(red: 1, green: 0, blue: 0.01164490638, alpha: 0.6546269806)
+        } else {
+            tfName.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        }
+        
+        if tfPrice.text!.isEmpty {
+            emptyFields.append("Preço")
+            tfPrice.backgroundColor = #colorLiteral(red: 1, green: 0, blue: 0.01164490638, alpha: 0.6546269806)
+        } else {
+            tfPrice.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        }
+        
+        if tfState.text!.isEmpty {
+            emptyFields.append("Estado")
+            tfState.backgroundColor = #colorLiteral(red: 1, green: 0, blue: 0.01164490638, alpha: 0.6546269806)
+        } else {
+            tfState.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        }
+        
+        if !emptyFields.isEmpty {
+            showAlert(fields: emptyFields)
+        }
+        
+    }
+    
+    func showAlert(fields: [String]) {
+        
+        let message = fields.joined(separator: ", ")
+        
+        let alert = UIAlertController(title: "\(message) \(fields.count > 1 ? "inconsistentes!" : "inconsistente!")", message: nil, preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+    
+}
 
+// MARK: - Extensions
+//extension ComprasRegisterViewController: UIImagePickerControllerDelegate{
+extension ComprasRegisterViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+        
+        //Iremos usar o código abaixo para criar uma versão reduzida da imagem escolhida pelo usuário
+        let smallSize = CGSize(width: 340, height: 200)
+        UIGraphicsBeginImageContext(smallSize)
+        image.draw(in: CGRect(x: 0, y: 0, width: smallSize.width, height: smallSize.height))
+        
+        //Atribuímos a versão reduzida da imagem à variável smallImage
+        smallImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        ivImage.image = smallImage //Atribuindo a imagem à ivPoster
+        
+        //Aqui efetuamos o dismiss na UIImagePickerController, para retornar à tela anterior
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    
 }
 
 extension ComprasRegisterViewController: UIPickerViewDelegate {
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return dataSource[row]
+        return dataSource[row].name
     }
 }
 
@@ -90,10 +232,9 @@ extension ComprasRegisterViewController: UIPickerViewDataSource {
     }
 }
 
-// MARK: - NSFetchedResultsControllerDelegate
 extension ComprasRegisterViewController: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        dataSource = fetchedResultController.fetchedObjects?.map({$0.name!})
+        dataSource = fetchedResultController.fetchedObjects
         pickerView.reloadComponent(0)
     }
 }
