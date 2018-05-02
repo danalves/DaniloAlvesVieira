@@ -16,6 +16,7 @@
 		92631887208BE0C000C50B75 /* ComprasTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92631886208BE0C000C50B75 /* ComprasTableViewController.swift */; };
 		92631889208D431100C50B75 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92631888208D431100C50B75 /* SettingsViewController.swift */; };
 		9263188B208D493700C50B75 /* UIViewController+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9263188A208D493700C50B75 /* UIViewController+CoreData.swift */; };
+		92F213102099142100356B13 /* ProductTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F2130F2099142100356B13 /* ProductTableViewCell.swift */; };
 		AC18B178208EA38A00A1EDC1 /* ComprasRegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC18B177208EA38A00A1EDC1 /* ComprasRegisterViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +32,7 @@
 		92631886208BE0C000C50B75 /* ComprasTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComprasTableViewController.swift; sourceTree = "<group>"; };
 		92631888208D431100C50B75 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		9263188A208D493700C50B75 /* UIViewController+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+CoreData.swift"; sourceTree = "<group>"; };
+		92F2130F2099142100356B13 /* ProductTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductTableViewCell.swift; sourceTree = "<group>"; };
 		AC18B177208EA38A00A1EDC1 /* ComprasRegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComprasRegisterViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -68,6 +70,7 @@
 				926318722086E8CD00C50B75 /* ViewController.swift */,
 				926318742086E8CD00C50B75 /* Main.storyboard */,
 				AC18B177208EA38A00A1EDC1 /* ComprasRegisterViewController.swift */,
+				92F2130F2099142100356B13 /* ProductTableViewCell.swift */,
 				92631888208D431100C50B75 /* SettingsViewController.swift */,
 				9263188A208D493700C50B75 /* UIViewController+CoreData.swift */,
 				92631886208BE0C000C50B75 /* ComprasTableViewController.swift */,
@@ -156,6 +159,7 @@
 				92631887208BE0C000C50B75 /* ComprasTableViewController.swift in Sources */,
 				9263188B208D493700C50B75 /* UIViewController+CoreData.swift in Sources */,
 				92631889208D431100C50B75 /* SettingsViewController.swift in Sources */,
+				92F213102099142100356B13 /* ProductTableViewCell.swift in Sources */,
 				926318712086E8CD00C50B75 /* AppDelegate.swift in Sources */,
 				AC18B178208EA38A00A1EDC1 /* ComprasRegisterViewController.swift in Sources */,
 			);

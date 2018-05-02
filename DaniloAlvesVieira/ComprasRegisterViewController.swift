@@ -13,10 +13,9 @@ class ComprasRegisterViewController: UIViewController {
     
     @IBOutlet weak var tfName: UITextField!
     @IBOutlet weak var ivImage: UIImageView!
-    
     @IBOutlet weak var tfPrice: UITextField!
-    
     @IBOutlet weak var tfState: UITextField!
+    @IBOutlet weak var swCreditCard: UISwitch!
     
     var pickerView: UIPickerView!
     var fetchedResultController: NSFetchedResultsController<State>!
@@ -24,28 +23,24 @@ class ComprasRegisterViewController: UIViewController {
     
     var smallImage: UIImage!
     
+    var product: Product!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         loadState()
+        createPickerView()
         
-        pickerView = UIPickerView()
-        pickerView.backgroundColor = .white
-        pickerView.delegate = self
-        pickerView.dataSource = self
-        
-        let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 44))
-        
-        let btDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
-        
-        let btCancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
-        
-        let btSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        
-        toolbar.items = [btCancel, btSpace, btDone]
-        
-        tfState.inputView = pickerView
-        tfState.inputAccessoryView = toolbar
+        if product != nil {
+            tfName.text = product.name
+            tfPrice.text = "\(product.price)"
+            tfState.text = product.state?.name
+            swCreditCard.isOn = product.creditcard
+            if let image = product.photo as? UIImage {
+                ivImage.image = image
+            }           
+            
+        }
         
     }
     
@@ -65,6 +60,27 @@ class ComprasRegisterViewController: UIViewController {
         
     }
     
+    func createPickerView() {
+        
+        pickerView = UIPickerView()
+        pickerView.backgroundColor = .white
+        pickerView.delegate = self
+        pickerView.dataSource = self
+        
+        let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 44))
+        
+        let btDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
+        
+        let btCancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
+        
+        let btSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        
+        toolbar.items = [btCancel, btSpace, btDone]
+        
+        tfState.inputView = pickerView
+        tfState.inputAccessoryView = toolbar
+    }
+    
     @objc func done() {
         
         tfState.text = dataSource[pickerView.selectedRow(inComponent: 0)].name
@@ -78,7 +94,7 @@ class ComprasRegisterViewController: UIViewController {
         
     }
     
-    @IBAction func addPoster(_ sender: UIButton) {
+    @IBAction func addPhoto(_ sender: UIButton) {
         //Criando o alerta que será apresentado ao usuário
         let alert = UIAlertController(title: "Selecionar poster", message: "De onde você quer escolher o poster?", preferredStyle: .actionSheet)
         
@@ -117,34 +133,50 @@ class ComprasRegisterViewController: UIViewController {
     
     @IBAction func addProduct(_ sender: UIButton) {
         
-        validation()
-        
-        let product = Product(context: self.context)
-        
-        product.name = tfName.text
-        product.state = dataSource[pickerView.selectedRow(inComponent: 0)]
-        
-        let formatter = NumberFormatter()
-        formatter.locale = NSLocale.current
-        formatter.numberStyle = .decimal
-        formatter.usesGroupingSeparator = true
-        
-        if let price = formatter.number(from: tfPrice!.text!) {
-            product.price = price.doubleValue
-        } else {
-            showAlert(fields: ["Preço"])
-        }
-        
-        
-        do {
-            try self.context.save()
-        } catch {
-            print(error.localizedDescription)
+        if validation() {
+            
+            let product = Product(context: self.context)
+            
+            product.name = tfName.text
+            product.state = dataSource[pickerView.selectedRow(inComponent: 0)]
+            product.creditcard = swCreditCard.isOn
+            
+            let formatter = NumberFormatter()
+            formatter.locale = NSLocale.current
+            formatter.numberStyle = .decimal
+            formatter.usesGroupingSeparator = true
+            
+            if let price = formatter.number(from: tfPrice!.text!) {
+                if price.doubleValue > 0 {
+                    product.price = price.doubleValue
+                } else {
+                    showAlert(fields: ["Preço"])
+                    context.delete(product)
+                    return
+                }
+            } else {
+                showAlert(fields: ["Preço"])
+                context.delete(product)
+                return
+            }
+            
+            if smallImage != nil {
+                product.photo = smallImage
+            }
+            
+            do {
+                try self.context.save()
+            } catch {
+                print(error.localizedDescription)
+            }
+            
+            navigationController?.popViewController(animated: true)
+            
         }
         
     }
     
-    func validation() {
+    func validation() -> Bool {
         
         var emptyFields: [String] = []
         
@@ -171,6 +203,9 @@ class ComprasRegisterViewController: UIViewController {
         
         if !emptyFields.isEmpty {
             showAlert(fields: emptyFields)
+            return false
+        } else {
+            return true
         }
         
     }
@@ -220,6 +255,7 @@ extension ComprasRegisterViewController: UIPickerViewDelegate {
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return dataSource[row].name
     }
+    
 }
 
 extension ComprasRegisterViewController: UIPickerViewDataSource {
