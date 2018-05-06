@@ -16,6 +16,7 @@ class ComprasRegisterViewController: UIViewController {
     @IBOutlet weak var tfPrice: UITextField!
     @IBOutlet weak var tfState: UITextField!
     @IBOutlet weak var swCreditCard: UISwitch!
+    @IBOutlet weak var btAddUpdate: UIButton!
     
     var pickerView: UIPickerView!
     var fetchedResultController: NSFetchedResultsController<State>!
@@ -33,13 +34,21 @@ class ComprasRegisterViewController: UIViewController {
         
         if product != nil {
             tfName.text = product.name
-            tfPrice.text = "\(product.price)"
+            
+            let formatter = NumberFormatter()
+            formatter.locale = NSLocale.current
+            formatter.numberStyle = .decimal
+            formatter.usesGroupingSeparator = true
+            
+            
+            tfPrice.text = formatter.string(from: NSNumber(value: product.price))
             tfState.text = product.state?.name
             swCreditCard.isOn = product.creditcard
             if let image = product.photo as? UIImage {
                 ivImage.image = image
             }           
             
+            btAddUpdate.setTitle("ALTERAR", for: .normal) 
         }
         
     }
@@ -79,6 +88,12 @@ class ComprasRegisterViewController: UIViewController {
         
         tfState.inputView = pickerView
         tfState.inputAccessoryView = toolbar
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        tfPrice.resignFirstResponder()
+        tfName.resignFirstResponder()
+        tfState.resignFirstResponder()
     }
     
     @objc func done() {
@@ -131,11 +146,21 @@ class ComprasRegisterViewController: UIViewController {
         present(imagePicker, animated: true, completion: nil)
     }
     
+    @IBAction func checkIfIsEmpty(_ sender: UITextField) {
+        if dataSource.count == 0 {
+            tfState.resignFirstResponder()
+            performSegue(withIdentifier: "manualSegue", sender: self)
+        }
+    }
+    
+    
     @IBAction func addProduct(_ sender: UIButton) {
         
         if validation() {
             
-            let product = Product(context: self.context)
+            if product == nil {
+                product = Product(context: self.context)
+            }
             
             product.name = tfName.text
             product.state = dataSource[pickerView.selectedRow(inComponent: 0)]

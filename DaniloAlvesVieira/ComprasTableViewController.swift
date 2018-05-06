@@ -63,9 +63,15 @@ class ComprasTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "compraCell", for: indexPath) as! ProductTableViewCell
-        let product = fetchedResultController.object(at: indexPath)
+        let product = fetchedResultController.object(at: indexPath) as Product
         cell.lbName.text = product.name
-        cell.lbPrice.text = "US$ \(product.price)"
+       
+        let formatter = NumberFormatter()
+        formatter.locale = NSLocale.current
+        formatter.numberStyle = .decimal
+        formatter.usesGroupingSeparator = true
+        
+        cell.lbPrice.text = "US$ \(formatter.string(from: NSNumber(value: product.price))!)"
         if let image = product.photo as? UIImage {
             cell.ivImage.image = image
         } else {
@@ -78,6 +84,17 @@ class ComprasTableViewController: UITableViewController {
         performSegue(withIdentifier: "editSegue", sender: self)
     }
     
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let product = fetchedResultController.object(at: indexPath)
+            context.delete(product)
+            do {
+                try context.save()
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "editSegue" {

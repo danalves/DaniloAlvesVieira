@@ -18,9 +18,11 @@ class SettingsViewController: UIViewController {
 
     var fetchedResultController: NSFetchedResultsController<State>!
     var label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 22))
-
+    var formatter = NumberFormatter()
     
     @IBOutlet weak var statesTableView: UITableView!
+    @IBOutlet weak var tfCotacao: UITextField!
+    @IBOutlet weak var tfIOF: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +36,15 @@ class SettingsViewController: UIViewController {
         
         loadState()
         
+        formatter.locale = NSLocale.current
+        formatter.numberStyle = .decimal
+        formatter.usesGroupingSeparator = true
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        tfCotacao.text = formatter.string(from: UserDefaults.standard.double(forKey: "cotacao") as NSNumber)
+        tfIOF.text = formatter.string(from: UserDefaults.standard.double(forKey: "iof") as NSNumber)
     }
 
     func loadState() {
@@ -49,7 +59,6 @@ class SettingsViewController: UIViewController {
         } catch {
             print(error.localizedDescription)
         }
-        
         
     }
     
@@ -69,15 +78,41 @@ class SettingsViewController: UIViewController {
         
         alert.addTextField { (textField2: UITextField) in
             textField2.placeholder = "Imposto"
+            textField2.keyboardType = .decimalPad
             if let tax = state?.tax {
-                textField2.text = "\(tax)"
+                textField2.text = self.formatter.string(from: tax as NSNumber)
             }
         }
         
         alert.addAction(UIAlertAction(title: title, style: .default, handler: { (action: UIAlertAction) in
             let state = state ?? State(context: self.context)
+            
+            if alert.textFields!.first!.text!.isEmpty {
+                
+                if type == .add {
+                    self.context.delete(state)
+                    self.showAlert(type: type, state: nil)
+                } else {
+                    self.showAlert(type: type, state: state)
+                }
+                return
+            }
+            
             state.name = alert.textFields?.first?.text
-            state.tax = Double(alert.textFields![1].text!)!
+            
+            if alert.textFields![1].text!.isEmpty {
+                
+                if type == .add {
+                    self.context.delete(state)
+                    self.showAlert(type: type, state: nil)
+                } else {
+                    self.showAlert(type: type, state: state)
+                }
+                return
+            }
+            
+            state.tax = self.formatter.number(from: alert.textFields![1].text!)!.doubleValue
+            
             do {
                 try self.context.save()
 //                self.loadState()
@@ -88,8 +123,30 @@ class SettingsViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Cancelar", style: .cancel, handler: nil))
         present(alert, animated: true, completion: nil)
     }
-
     
+    @IBAction func updateCotacao(_ sender: UITextField) {
+        
+        if tfCotacao.text!.isEmpty {
+            tfCotacao.becomeFirstResponder()
+            tfCotacao.backgroundColor = #colorLiteral(red: 1, green: 0, blue: 0.01164490638, alpha: 0.6546269806)
+        } else {
+            tfCotacao.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+            UserDefaults.standard.set(formatter.number(from: tfCotacao.text!)?.doubleValue, forKey: "cotacao")
+        }
+
+    }
+    
+    @IBAction func updateIOF(_ sender: Any) {
+
+        if tfIOF.text!.isEmpty {
+            tfIOF.becomeFirstResponder()
+            tfIOF.backgroundColor = #colorLiteral(red: 1, green: 0, blue: 0.01164490638, alpha: 0.6546269806)
+        } else {
+            tfIOF.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+            UserDefaults.standard.set(formatter.number(from: tfIOF.text!)?.doubleValue, forKey: "iof")
+        }
+        
+    }
     
 }
 
@@ -100,6 +157,10 @@ extension SettingsViewController: UITableViewDelegate {
 
 extension SettingsViewController: UITableViewDataSource {
    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if let count = fetchedResultController.fetchedObjects?.count {
@@ -117,15 +178,28 @@ extension SettingsViewController: UITableViewDataSource {
         let state = fetchedResultController.object(at: indexPath)
         
         cell.textLabel?.text = state.name
-        cell.detailTextLabel?.text = "\(state.tax)"
+        cell.detailTextLabel?.text = formatter.string(from: state.tax as NSNumber)
         
         return cell
         
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let state = fetchedResultController.object(at: indexPath)
+            context.delete(state)
+            do {
+                try context.save()
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        showAlert(type: .edit, state: fetchedResultController.object(at: indexPath))
+    }
+
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
